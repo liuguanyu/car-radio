@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#121212"
+    tools:context=".ui.player.PlayerActivity">
+
+    <!-- Top Toolbar -->
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        app:navigationIcon="@drawable/ic_arrow_back"
+        app:navigationContentDescription="@string/back"
+        app:title="@string/radio_mode"
+        app:titleTextColor="@color/white"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Vintage Radio Body (Horizontal Layout for Car Screen) -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/radioBody"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginHorizontal="32dp"
+        android:layout_marginBottom="32dp"
+        android:layout_marginTop="8dp"
+        app:cardCornerRadius="24dp"
+        app:cardElevation="24dp"
+        app:cardBackgroundColor="#212121"
+        app:strokeWidth="2dp"
+        app:strokeColor="#333333"
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:baselineAligned="false"
+            android:padding="24dp">
+
+            <!-- Left Side: Indicator Display Window (LCD style) -->
+            <FrameLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1.5"
+                android:layout_marginEnd="16dp">
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/radioDisplay"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:cardCornerRadius="8dp"
+                    app:cardElevation="0dp"
+                    app:cardBackgroundColor="#0D1B2A"
+                    app:strokeWidth="4dp"
+                    app:strokeColor="#111111">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical"
+                        android:gravity="center"
+                        android:padding="16dp">
+
+                        <!-- Station Icon -->
+                        <ImageView
+                            android:id="@+id/stationImageView"
+                            android:layout_width="120dp"
+                            android:layout_height="120dp"
+                            android:contentDescription="@string/content_description_station_logo"
+                            android:scaleType="centerCrop"
+                            android:background="#222222"
+                            app:srcCompat="@drawable/ic_radio_station" />
+
+                        <!-- Station Title -->
+                        <TextView
+                            android:id="@+id/stationTitleTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="16dp"
+                            android:textColor="#42E2B8"
+                            android:textSize="28sp"
+                            android:textStyle="bold"
+                            android:gravity="center"
+                            android:fontFamily="sans-serif-condensed"
+                            tools:text="China Radio International" />
+
+                        <!-- Program Info -->
+                        <TextView
+                            android:id="@+id/programInfoTextView"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:textColor="#118AB2"
+                            android:textSize="18sp"
+                            android:gravity="center"
+                            android:maxLines="2"
+                            android:ellipsize="marquee"
+                            android:marqueeRepeatLimit="marquee_forever"
+                            android:focusable="true"
+                            android:focusableInTouchMode="true"
+                            tools:text="Now Playing: Evening News - Live Broadcast" />
+
+                        <!-- Status -->
+                        <TextView
+                            android:id="@+id/statusTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="12dp"
+                            android:background="@drawable/bg_now_playing"
+                            android:paddingHorizontal="12dp"
+                            android:paddingVertical="4dp"
+                            android:text="@string/now_playing"
+                            android:textColor="#42E2B8"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:visibility="gone"
+                            tools:visibility="visible" />
+                    </LinearLayout>
+
+                </com.google.android.material.card.MaterialCardView>
+            </FrameLayout>
+
+            <!-- Right Side: Controls Panel -->
+            <LinearLayout
+                android:id="@+id/controlsPanel"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center">
+
+                <!-- Row 1: Change Station & Change Province -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center"
+                    android:weightSum="2">
+
+                    <!-- Station Knob -->
+                    <LinearLayout
+                        android:id="@+id/knobChangeStation"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:gravity="center">
+
+                        <ImageButton
+                            android:id="@+id/btnPreviousStation"
+                            android:layout_width="56dp"
+                            android:layout_height="56dp"
+                            android:background="@drawable/bg_knob"
+                            android:scaleType="center"
+                            android:src="@drawable/ic_knob_up"
+                            android:elevation="8dp"
+                            android:contentDescription="@string/previous"
+                            app:tint="#DDDDDD" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:text="@string/change_station"
+                            android:textColor="#888888"
+                            android:textSize="12sp"
+                            android:textAllCaps="true" />
+
+                        <ImageButton
+                            android:id="@+id/btnNextStation"
+                            android:layout_width="56dp"
+                            android:layout_height="56dp"
+                            android:layout_marginTop="8dp"
+                            android:background="@drawable/bg_knob"
+                            android:scaleType="center"
+                            android:src="@drawable/ic_knob_down"
+                            android:elevation="8dp"
+                            android:contentDescription="@string/next"
+                            app:tint="#DDDDDD" />
+                    </LinearLayout>
+
+                    <!-- Province Knob -->
+                    <LinearLayout
+                        android:id="@+id/knobChangeProvince"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:gravity="center">
+
+                        <ImageButton
+                            android:id="@+id/btnPrevProvince"
+                            android:layout_width="56dp"
+                            android:layout_height="56dp"
+                            android:background="@drawable/bg_knob"
+                            android:scaleType="center"
+                            android:src="@drawable/ic_knob_left"
+                            android:elevation="8dp"
+                            android:contentDescription="@string/previous"
+                            app:tint="#DDDDDD" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:text="@string/change_province"
+                            android:textColor="#888888"
+                            android:textSize="12sp"
+                            android:textAllCaps="true" />
+
+                        <ImageButton
+                            android:id="@+id/btnNextProvince"
+                            android:layout_width="56dp"
+                            android:layout_height="56dp"
+                            android:layout_marginTop="8dp"
+                            android:background="@drawable/bg_knob"
+                            android:scaleType="center"
+                            android:src="@drawable/ic_knob_right"
+                            android:elevation="8dp"
+                            android:contentDescription="@string/next"
+                            app:tint="#DDDDDD" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- Row 2: Volume & Favorite -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:orientation="horizontal"
+                    android:gravity="center"
+                    android:weightSum="2">
+
+                    <!-- Volume Knob -->
+                    <LinearLayout
+                        android:id="@+id/knobVolume"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:gravity="center">
+
+                        <ImageButton
+                            android:id="@+id/btnVolume"
+                            android:layout_width="72dp"
+                            android:layout_height="72dp"
+                            android:background="@drawable/bg_knob"
+                            android:scaleType="center"
+                            android:src="@drawable/ic_volume"
+                            android:elevation="12dp"
+                            android:contentDescription="@string/volume"
+                            app:tint="#DDDDDD" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:text="@string/volume_control"
+                            android:textColor="#888888"
+                            android:textSize="12sp"
+                            android:textAllCaps="true" />
+
+                        <TextView
+                            android:id="@+id/volumeLevelText"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:textColor="#42E2B8"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:fontFamily="sans-serif-condensed"
+                            tools:text="50%" />
+                    </LinearLayout>
+
+                    <!-- Favorite Knob -->
+                    <LinearLayout
+                        android:id="@+id/knobFavorite"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:gravity="center">
+
+                        <ImageButton
+                            android:id="@+id/btnFavorite"
+                            android:layout_width="56dp"
+                            android:layout_height="56dp"
+                            android:background="@drawable/bg_knob"
+                            android:scaleType="center"
+                            android:src="@drawable/ic_favorite_border"
+                            android:elevation="8dp"
+                            android:contentDescription="@string/favorite_add"
+                            app:tint="#DDDDDD" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:text="@string/favorite_control"
+                            android:textColor="#888888"
+                            android:textSize="12sp"
+                            android:textAllCaps="true" />
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

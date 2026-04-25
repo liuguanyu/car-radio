@@ -1,0 +1,102 @@
+<resources>
+    <string name="app_name">车载电台</string>
+    <string name="title_activity_main">电台列表</string>
+    <string name="title_activity_player">正在播放</string>
+    <string name="title_activity_favorites">我的收藏</string>
+    <string name="title_activity_schedule">播放计划</string>
+
+    <!-- 通用 -->
+    <string name="loading">加载中…</string>
+    <string name="error">错误</string>
+    <string name="retry">重试</string>
+    <string name="ok">确定</string>
+    <string name="cancel">取消</string>
+    <string name="delete">删除</string>
+    <string name="save">保存</string>
+    <string name="edit">编辑</string>
+
+    <!-- 启动页 -->
+    <string name="splash_loading">正在加载电台列表…</string>
+
+    <!-- 主页面 -->
+    <string name="search_hint">搜索电台…</string>
+    <string name="no_stations">未找到电台</string>
+    <string name="all_stations">全部电台</string>
+    <string name="provinces">省份</string>
+    <string name="favorites">收藏</string>
+    <string name="schedule">播放计划</string>
+    <string name="refresh">刷新</string>
+
+    <!-- 播放器 -->
+    <string name="now_playing">正在播放</string>
+    <string name="buffering">缓冲中…</string>
+    <string name="play">播放</string>
+    <string name="pause">暂停</string>
+    <string name="stop">停止</string>
+    <string name="previous">上一曲</string>
+    <string name="next">下一曲</string>
+    <string name="favorite_add">添加到收藏</string>
+    <string name="favorite_remove">取消收藏</string>
+    <string name="volume">音量</string>
+    <string name="background_play">后台播放</string>
+    <string name="exit_app">退出应用</string>
+    <string name="station_play_button">进入播放</string>
+    <string name="current_program">当前节目</string>
+    <string name="radio_mode">收音机</string>
+    <string name="change_station">换台</string>
+    <string name="change_province">换省</string>
+    <string name="volume_control">音量控制</string>
+    <string name="favorite_control">收藏</string>
+    <string name="favorite_remove_control">取消收藏</string>
+
+    <!-- 收藏页 -->
+    <string name="no_favorites">暂无收藏</string>
+    <string name="favorites_empty">添加电台到收藏以在此查看</string>
+
+    <!-- 播放计划 -->
+    <string name="no_schedule">暂无播放计划</string>
+    <string name="schedule_empty">创建播放计划以自动切换电台</string>
+    <string name="add_schedule">添加计划</string>
+    <string name="edit_schedule">编辑计划</string>
+    <string name="delete_schedule">删除计划</string>
+    <string name="enable_schedule">启用计划</string>
+    <string name="disable_schedule">禁用计划</string>
+    <string name="station">电台</string>
+    <string name="时间">时间</string>
+    <string name="enabled">已启用</string>
+    <string name="disabled">已禁用</string>
+
+    <!-- 省份 -->
+    <string name="all_provinces">全部省份</string>
+    <string name="select_province">选择省份</string>
+    <string name="province_selection_title">选择省份</string>
+    <string name="current_province">当前省份：%s</string>
+    <string name="no_provinces">未找到省份数据</string>
+
+    <!-- 通知栏 -->
+    <string name="notification_channel_name">电台播放</string>
+    <string name="notification_channel_description">电台播放控制</string>
+    <string name="notification_title">电台播放中</string>
+
+    <!-- 错误提示 -->
+    <string name="error_network">网络错误，请检查网络连接。</string>
+    <string name="error_load_stations">加载电台失败，请重试。</string>
+    <string name="error_play_station">播放电台失败，请选择其他电台。</string>
+
+    <!-- 车载模式 -->
+    <string name="car_mode">车载模式</string>
+    <string name="simple_controls">简易控制</string>
+
+    <!-- 无障碍 -->
+    <string name="content_description_station_logo">电台图标</string>
+    <string name="content_description_favorite">收藏按钮</string>
+    <string name="content_description_play">播放按钮</string>
+    <string name="content_description_pause">暂停按钮</string>
+    <string name="content_description_stop">停止按钮</string>
+    <string name="content_description_previous">上一电台</string>
+    <string name="content_description_next">下一电台</string>
+    <string name="content_description_volume">音量控制</string>
+    <string name="content_description_province_icon">省份图标</string>
+    <string name="back">返回</string>
+
+</resources>

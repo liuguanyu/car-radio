@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 宫格布局尺寸 -->
+    <dimen name="grid_item_width">160dp</dimen>
+    <dimen name="grid_item_height">120dp</dimen>
+    <dimen name="grid_item_margin">4dp</dimen>
+    <dimen name="station_icon_size">48dp</dimen>
+
+    <!-- 播放界面尺寸 -->
+    <dimen name="player_station_image_size">200dp</dimen>
+    <dimen name="player_control_button_size">64dp</dimen>
+    <dimen name="player_knob_size">72dp</dimen>
+    <dimen name="player_knob_margin">16dp</dimen>
+
+    <!-- 字体大小 -->
+    <dimen name="text_size_station_title">16sp</dimen>
+    <dimen name="text_size_station_subtitle">14sp</dimen>
+    <dimen name="text_size_program_info">18sp</dimen>
+    <dimen name="text_size_knob_label">12sp</dimen>
+</resources>
