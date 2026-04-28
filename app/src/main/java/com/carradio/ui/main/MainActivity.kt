@@ -1,11 +1,14 @@
 package com.carradio.ui.main
 
 import android.content.BroadcastReceiver
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.ServiceConnection
 import android.os.Build
 import android.os.Bundle
+import android.os.IBinder
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -25,6 +28,7 @@ import com.carradio.R
 import com.carradio.data.db.RadioDatabase
 import com.carradio.data.model.Station
 import com.carradio.data.repository.RadioRepository
+import com.carradio.service.RadioService
 import com.carradio.ui.favorites.FavoritesActivity
 import com.carradio.ui.player.PlayerActivity
 import com.carradio.ui.province.ProvinceAdapter
@@ -54,6 +58,9 @@ class MainActivity : AppCompatActivity() {
 
     private var playFabBackground: ImageView? = null
 
+    // Track the currently playing station (updated by broadcast or user action)
+    private var currentPlayingStation: Station? = null
+
     // Broadcast receiver to listen for station changes
     private val stationChangeReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
@@ -65,6 +72,8 @@ class MainActivity : AppCompatActivity() {
                         @Suppress("DEPRECATION")
                         intent?.getSerializableExtra("station") as? Station
                     }
+                    // Update currentPlayingStation so playFab stays in sync
+                    currentPlayingStation = station
                     playFabBackground?.let { updatePlayFabBackground(station, it) }
                     
                     // Update selected station in adapter
@@ -111,6 +120,9 @@ class MainActivity : AppCompatActivity() {
             filter,
             androidx.core.content.ContextCompat.RECEIVER_NOT_EXPORTED
         )
+
+        // Sync currentPlayingStation from RadioService in case it changed while we were paused
+        syncCurrentPlayingStation()
     }
 
     override fun onPause() {
@@ -157,9 +169,14 @@ class MainActivity : AppCompatActivity() {
         provinceRecyclerView.adapter = provinceAdapter
         provinceRecyclerView.setHasFixedSize(true)
 
-        stationAdapter = StationAdapter { station ->
-            playStation(station)
-        }
+        stationAdapter = StationAdapter(
+            onStationClick = { station ->
+                playStation(station)
+            },
+            onFavoriteClick = { station ->
+                viewModel.toggleFavorite(station)
+            }
+        )
         val gridLayoutManager = GridLayoutManager(this, 3)
         stationRecyclerView.layoutManager = gridLayoutManager
         stationRecyclerView.adapter = stationAdapter
@@ -191,8 +208,10 @@ class MainActivity : AppCompatActivity() {
                 stationAdapter.setSelectedPosition(0)
             }
             // 当电台列表变化时，更新playFab背景
+            // 优先使用 currentPlayingStation（可能由播放计划切换），否则使用 adapter 选中项
             val playFabBackground = findViewById<ImageView>(R.id.playFabBackground)
-            updatePlayFabBackground(stationAdapter.selectedStation, playFabBackground)
+            val stationToShow = currentPlayingStation ?: stationAdapter.selectedStation
+            updatePlayFabBackground(stationToShow, playFabBackground)
         }
 
         viewModel.loading.observe(this) { isLoading ->
@@ -221,6 +240,42 @@ class MainActivity : AppCompatActivity() {
     private fun loadData() {
     }
 
+    /**
+     * Sync currentPlayingStation from RadioService.
+     * This handles the case where the station was changed (e.g. by schedule) while MainActivity was in the background.
+     */
+    private fun syncCurrentPlayingStation() {
+        val serviceIntent = Intent(this, RadioService::class.java)
+        val connection = object : ServiceConnection {
+            override fun onServiceConnected(name: ComponentName, service: IBinder) {
+                val binder = service as RadioService.LocalBinder
+                val radioService = binder.getService()
+                val station = radioService.getCurrentStation()
+                if (station != null && station.contentId != currentPlayingStation?.contentId) {
+                    currentPlayingStation = station
+                    playFabBackground?.let { updatePlayFabBackground(station, it) }
+
+                    // Update selected position in adapter if the station is in the current list
+                    val currentStations = viewModel.stations.value ?: emptyList()
+                    val index = currentStations.indexOfFirst { it.contentId == station.contentId }
+                    if (index != -1) {
+                        stationAdapter.setSelectedPosition(index)
+                    }
+                }
+                unbindService(this)
+            }
+
+            override fun onServiceDisconnected(name: ComponentName) {
+                // Service disconnected, nothing to do
+            }
+        }
+        try {
+            bindService(serviceIntent, connection, 0)
+        } catch (e: Exception) {
+            // Service not running, ignore
+        }
+    }
+
     private fun checkLastPlayedStation() {
         val station = intent.extras?.getSerializable(EXTRA_LAST_PLAYED_STATION) as? Station
         station?.let {
@@ -233,7 +288,8 @@ class MainActivity : AppCompatActivity() {
             repository.updatePlayLasted(station, System.currentTimeMillis())
         }
 
-        // Update the play fab button immediately
+        // Update currentPlayingStation and the play fab button immediately
+        currentPlayingStation = station
         playFabBackground?.let { updatePlayFabBackground(station, it) }
 
         val intent = Intent(this, PlayerActivity::class.java).apply {
@@ -249,10 +305,11 @@ class MainActivity : AppCompatActivity() {
         val playFabOverlay = findViewById<View>(R.id.playFabOverlay)
 
         // 设置播放按钮点击事件
+        // 优先使用 currentPlayingStation（可能由播放计划切换），否则使用 adapter 选中项
         playFabContainer.setOnClickListener {
-            val selectedStation = stationAdapter.selectedStation
-            if (selectedStation != null) {
-                playStation(selectedStation)
+            val stationToPlay = currentPlayingStation ?: stationAdapter.selectedStation
+            if (stationToPlay != null) {
+                playStation(stationToPlay)
             } else if (stationAdapter.itemCount > 0) {
                 val firstStation = stationAdapter.getStation(0)
                 if (firstStation != null) {
@@ -264,11 +321,12 @@ class MainActivity : AppCompatActivity() {
         // 监听选中电台变化，更新playFab背景
         // Add null safety check
         stationAdapter.setOnStationSelectedListener { station ->
+            currentPlayingStation = station
             playFabBackground?.let { updatePlayFabBackground(station, it) }
         }
 
         // 初始状态：如果已有选中电台，更新背景
-        val initialStation = stationAdapter.selectedStation
+        val initialStation = currentPlayingStation ?: stationAdapter.selectedStation
         if (initialStation != null) {
             playFabBackground?.let { updatePlayFabBackground(initialStation, it) }
         }

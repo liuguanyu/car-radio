@@ -32,8 +32,23 @@ class FavoritesViewModel(application: Application) : AndroidViewModel(applicatio
 
     fun loadFavorites() {
         viewModelScope.launch {
-            repository.getFavoriteStations().observeForever { stations ->
-                _favorites.postValue(stations)
+            try {
+                val favoriteStations = repository.getFavoriteStations()
+                _favorites.postValue(favoriteStations)
+            } catch (e: Exception) {
+                // 可以添加错误处理
+                _favorites.postValue(emptyList())
+            }
+        }
+    }
+
+    fun toggleFavorite(station: Station) {
+        viewModelScope.launch {
+            try {
+                repository.toggleFavorite(station, !station.isFavorite)
+                loadFavorites() // 重新加载收藏列表
+            } catch (e: Exception) {
+                // 可以添加错误处理
             }
         }
     }

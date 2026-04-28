@@ -167,6 +167,7 @@ class RadioService : MediaSessionService() {
             // Send broadcast to notify station change
             val intent = Intent(ACTION_STATION_CHANGED).apply {
                 putExtra("station", station)
+                setPackage(packageName)
             }
             sendBroadcast(intent)
         } ?: run {
@@ -185,6 +186,20 @@ class RadioService : MediaSessionService() {
 
     fun isPlaying(): Boolean = exoPlayer?.isPlaying ?: false
     fun getCurrentStation(): Station? = currentStation
+
+    /**
+     * Get ExoPlayer volume (0.0 to 1.0).
+     * This is app-level volume, does not affect other apps' audio.
+     */
+    fun getPlayerVolume(): Float = exoPlayer?.volume ?: 1.0f
+
+    /**
+     * Set ExoPlayer volume (0.0 to 1.0).
+     * This is app-level volume, does not affect other apps' audio.
+     */
+    fun setPlayerVolume(volume: Float) {
+        exoPlayer?.volume = volume.coerceIn(0.0f, 1.0f)
+    }
 
     override fun onGetSession(controllerInfo: MediaSession.ControllerInfo): MediaSession? = mediaSession
 

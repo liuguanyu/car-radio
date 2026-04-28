@@ -30,19 +30,20 @@
             app:layout_constraintEnd_toEndOf="parent"
             tools:src="@drawable/ic_radio_station" />
 
-        <!-- Favorite icon overlay -->
+        <!-- Favorite icon - positioned below title to avoid accidental clicks -->
         <ImageView
             android:id="@+id/favoriteIcon"
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:src="@drawable/ic_favorite"
-            app:tint="@color/favorite"
-            android:layout_margin="8dp"
-            android:elevation="4dp"
-            android:visibility="gone"
-            app:layout_constraintTop_toTopOf="@id/stationImageView"
-            app:layout_constraintEnd_toEndOf="@id/stationImageView"
-            tools:visibility="visible" />
+            android:src="@drawable/ic_favorite_border"
+            app:tint="@color/text_secondary"
+            android:layout_marginTop="4dp"
+            android:elevation="2dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            app:layout_constraintTop_toBottomOf="@id/titleTextView"
+            app:layout_constraintEnd_toEndOf="parent" />
 
         <!-- Title -->
         <TextView

@@ -44,9 +44,10 @@ class ScheduleDialogFragment(
     private var provinces: List<Province> = emptyList()
     private var stations: List<Station> = emptyList()
 
-    // 默认省份，比如“国家台”或者北京
-    private var initialProvinceCode: String = "0"
-    private var isFirstLoad = true
+    // Track whether this is the first station load for edit mode
+    private var isFirstStationLoad = true
+    // Flag to prevent spinner listener from firing during programmatic selection
+    private var isSettingProvince = false
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val view = LayoutInflater.from(requireContext())
@@ -88,7 +89,7 @@ class ScheduleDialogFragment(
                 contentId = s.stationId,
                 title = s.stationName,
                 subtitle = "",
-                imageUrl = null,
+                imageUrl = s.imageUrl,
                 playUrlLow = null
             )
             timeTextView.text = s.time
@@ -103,7 +104,7 @@ class ScheduleDialogFragment(
             try {
                 val loadedProvinces = withContext(Dispatchers.IO) {
                     val list = repository.getAllProvincesSync().toMutableList()
-                    // 添加一个"全部/国家台"选项
+                    // Add "National" option at the top
                     list.add(0, Province(code = 0, name = "国家台"))
                     list
                 }
@@ -115,28 +116,20 @@ class ScheduleDialogFragment(
 
                 val adapter = ArrayAdapter(
                     requireContext(),
-                    android.R.layout.simple_spinner_item,
+                    R.layout.item_spinner,
                     provinces.map { it.name }
                 )
-                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                adapter.setDropDownViewResource(R.layout.item_spinner_dropdown)
                 provinceSpinner.adapter = adapter
 
-                // Try to find the province for the current schedule if editing
-                if (schedule != null && isFirstLoad) {
-                    // Fetch station details to find its province (This is a simplified approach, 
-                    // ideally we should store provinceCode in Schedule)
-                    val stationDetails = withContext(Dispatchers.IO) {
-                        repository.getStationById(schedule.stationId)
-                    }
-                    if (stationDetails != null) {
-                        // Note: If station doesn't contain province info, we might not be able to pre-select it accurately.
-                        // Here we assume initialProvinceCode = "0" as fallback.
-                        // If API provides a way to get province from station, use it here.
-                    }
-                }
-
+                // Set up province selection listener
                 provinceSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                        if (isSettingProvince) {
+                            // Skip loading stations when we are programmatically setting province
+                            selectedProvince = provinces[position]
+                            return
+                        }
                         selectedProvince = provinces[position]
                         loadStations(selectedProvince?.code.toString())
                     }
@@ -144,6 +137,23 @@ class ScheduleDialogFragment(
                     override fun onNothingSelected(parent: AdapterView<*>?) {
                         selectedProvince = null
                     }
+                }
+
+                // For edit mode: pre-select the province from the schedule
+                if (schedule != null) {
+                    isSettingProvince = true
+                    val provincePosition = provinces.indexOfFirst { it.code == schedule.provinceCode }
+                    if (provincePosition >= 0) {
+                        provinceSpinner.setSelection(provincePosition)
+                        selectedProvince = provinces[provincePosition]
+                    }
+                    isSettingProvince = false
+
+                    // Now load stations for the selected province
+                    loadStations(selectedProvince?.code.toString())
+                } else {
+                    // New schedule: load stations for default province
+                    loadStations("0")
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -165,20 +175,27 @@ class ScheduleDialogFragment(
 
                 val adapter = ArrayAdapter(
                     requireContext(),
-                    android.R.layout.simple_spinner_item,
+                    R.layout.item_spinner,
                     stations.map { it.title }
                 )
-                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                adapter.setDropDownViewResource(R.layout.item_spinner_dropdown)
                 stationSpinner.adapter = adapter
 
-                if (isFirstLoad && schedule != null) {
+                // For edit mode: always try to select the station from the schedule
+                if (schedule != null) {
                     val position = stations.indexOfFirst { it.contentId == schedule.stationId }
                     if (position >= 0) {
                         stationSpinner.setSelection(position)
                         selectedStation = stations[position]
+                    } else {
+                        // Station not found in this province list, select first
+                        if (stations.isNotEmpty()) {
+                            stationSpinner.setSelection(0)
+                            selectedStation = stations[0]
+                        }
                     }
-                    isFirstLoad = false
                 } else if (stations.isNotEmpty()) {
+                    // New schedule: select first station
                     stationSpinner.setSelection(0)
                     selectedStation = stations[0]
                 }
@@ -218,14 +235,27 @@ class ScheduleDialogFragment(
         val hour = calendar.get(java.util.Calendar.HOUR_OF_DAY)
         val minute = calendar.get(java.util.Calendar.MINUTE)
 
+        // If editing and time is already set, parse it
+        val initialHour: Int
+        val initialMinute: Int
+        val currentTime = timeTextView.text.toString()
+        if (currentTime.isNotEmpty() && currentTime.contains(":")) {
+            val parts = currentTime.split(":")
+            initialHour = parts[0].toIntOrNull() ?: hour
+            initialMinute = parts[1].toIntOrNull() ?: minute
+        } else {
+            initialHour = hour
+            initialMinute = minute
+        }
+
         val timePicker = android.app.TimePickerDialog(
             requireContext(),
             { _, selectedHour, selectedMinute ->
                 val time = String.format("%02d:%02d", selectedHour, selectedMinute)
                 timeTextView.text = time
             },
-            hour,
-            minute,
+            initialHour,
+            initialMinute,
             true
         )
         timePicker.show()

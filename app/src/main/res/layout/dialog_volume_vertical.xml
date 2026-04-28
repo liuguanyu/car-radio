@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="80dp"
+    android:layout_height="320dp"
+    android:orientation="vertical"
+    android:gravity="center_horizontal"
+    android:paddingHorizontal="8dp"
+    android:paddingVertical="12dp"
+    android:background="#E02A2A2A">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/volume_control"
+        android:textColor="#888888"
+        android:textSize="10sp"
+        android:textAllCaps="true"
+        android:layout_marginBottom="8dp" />
+
+    <!-- Vertical SeekBar using rotation -->
+    <FrameLayout
+        android:layout_width="50dp"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:paddingTop="20dp"
+        android:paddingBottom="20dp">
+
+        <SeekBar
+            android:id="@+id/volumeSeekBar"
+            android:layout_width="280dp"
+            android:layout_height="40dp"
+            android:layout_gravity="center"
+            android:rotation="270"
+            android:max="20"
+            android:progress="10"
+            android:splitTrack="false"
+            android:progressTint="#42E2B8"
+            android:progressBackgroundTint="#33FFFFFF"
+            android:thumbTint="#42E2B8"
+            android:thumbOffset="12dp" />
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/volumePercentText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:textColor="#42E2B8"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:fontFamily="sans-serif-condensed"
+        tools:text="50%" />
+
+</LinearLayout>

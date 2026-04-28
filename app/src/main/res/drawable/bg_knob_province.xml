@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Outer shadow ring -->
+    <item>
+        <shape android:shape="oval">
+            <solid android:color="#FF111111" />
+            <size android:width="96dp" android:height="96dp" />
+        </shape>
+    </item>
+    <!-- Metallic outer ring -->
+    <item android:top="2dp" android:bottom="2dp" android:left="2dp" android:right="2dp">
+        <shape android:shape="oval">
+            <gradient
+                android:type="radial"
+                android:gradientRadius="48dp"
+                android:startColor="#FF666666"
+                android:endColor="#FF333333" />
+            <stroke android:width="1dp" android:color="#FF444444" />
+        </shape>
+    </item>
+    <!-- Knob body with 3D gradient -->
+    <item android:top="8dp" android:bottom="8dp" android:left="8dp" android:right="8dp">
+        <shape android:shape="oval">
+            <gradient
+                android:type="radial"
+                android:gradientRadius="40dp"
+                android:startColor="#FF4A4A4A"
+                android:centerColor="#FF2E2E2E"
+                android:endColor="#FF1A1A1A" />
+            <stroke android:width="0.5dp" android:color="#FF555555" />
+        </shape>
+    </item>
+    <!-- Inner highlight ring -->
+    <item android:top="10dp" android:bottom="10dp" android:left="10dp" android:right="10dp">
+        <shape android:shape="oval">
+            <gradient
+                android:type="radial"
+                android:gradientRadius="38dp"
+                android:startColor="#00FFFFFF"
+                android:endColor="#00FFFFFF" />
+            <stroke android:width="0.5dp" android:color="#1AFFFFFF" />
+        </shape>
+    </item>
+</layer-list>

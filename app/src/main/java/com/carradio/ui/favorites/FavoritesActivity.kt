@@ -13,6 +13,7 @@ import com.carradio.R
 import com.carradio.data.model.Station
 import com.carradio.ui.main.StationAdapter
 import com.carradio.ui.player.PlayerActivity
+import com.google.android.material.appbar.MaterialToolbar
 
 /**
  * Activity showing favorite radio stations
@@ -25,29 +26,42 @@ class FavoritesActivity : AppCompatActivity() {
 
     private val viewModel: FavoritesViewModel by viewModels()
 
+    private lateinit var toolbar: MaterialToolbar
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_favorites)
 
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.title = getString(R.string.title_activity_favorites)
-
         initViews()
+        setupToolbar()
         setupRecyclerView()
         setupObservers()
     }
 
     private fun initViews() {
+        toolbar = findViewById(R.id.toolbar)
         recyclerView = findViewById(R.id.recyclerView)
         emptyView = findViewById(R.id.emptyView)
     }
 
-    private fun setupRecyclerView() {
-        adapter = StationAdapter { station ->
-            playStation(station)
+    private fun setupToolbar() {
+        toolbar.title = getString(R.string.title_activity_favorites)
+        toolbar.setNavigationOnClickListener {
+            finish()
         }
+    }
 
-        val gridLayoutManager = GridLayoutManager(this, 2)
+    private fun setupRecyclerView() {
+        adapter = StationAdapter(
+            onStationClick = { station ->
+                playStation(station)
+            },
+            onFavoriteClick = { station ->
+                viewModel.toggleFavorite(station)
+            }
+        )
+
+        val gridLayoutManager = GridLayoutManager(this, 3)
         recyclerView.layoutManager = gridLayoutManager
         recyclerView.adapter = adapter
         recyclerView.setHasFixedSize(true)
@@ -76,10 +90,6 @@ class FavoritesActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
-    override fun onSupportNavigateUp(): Boolean {
-        finish()
-        return true
-    }
 
     override fun onResume() {
         super.onResume()

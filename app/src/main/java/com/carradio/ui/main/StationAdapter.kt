@@ -16,7 +16,8 @@ import com.carradio.data.model.Station
  * RecyclerView adapter for displaying radio stations
  */
 class StationAdapter(
-    private val onStationClick: (Station) -> Unit
+    private val onStationClick: (Station) -> Unit,
+    private val onFavoriteClick: ((Station) -> Unit)? = null
 ) : ListAdapter<Station, StationAdapter.StationViewHolder>(StationDiffCallback()) {
 
     private var currentSelectedPosition = RecyclerView.NO_POSITION
@@ -72,6 +73,12 @@ class StationAdapter(
 
             setSelectedPosition(adapterPosition)
             onStationClick(getItem(adapterPosition))
+        }
+
+        holder.favoriteIcon.setOnClickListener {
+            val adapterPosition = holder.bindingAdapterPosition
+            if (adapterPosition == RecyclerView.NO_POSITION) return@setOnClickListener
+            onFavoriteClick?.invoke(getItem(adapterPosition))
         }
     }
 
@@ -173,7 +180,7 @@ class StationAdapter(
         private val stationImageView: ImageView = itemView.findViewById(R.id.stationImageView)
         private val titleTextView: TextView = itemView.findViewById(R.id.titleTextView)
         private val subtitleTextView: TextView = itemView.findViewById(R.id.subtitleTextView)
-        private val favoriteIcon: ImageView = itemView.findViewById(R.id.favoriteIcon)
+        val favoriteIcon: ImageView = itemView.findViewById(R.id.favoriteIcon)
         private val playingStatus: TextView = itemView.findViewById(R.id.playingStatus)
 
         fun bind(station: Station, isSelected: Boolean) {
@@ -190,7 +197,18 @@ class StationAdapter(
                 stationImageView.setImageResource(R.drawable.ic_radio_station)
             }
 
-            favoriteIcon.visibility = if (station.isFavorite) View.VISIBLE else View.GONE
+            // 收藏图标始终可见，根据收藏状态切换图标
+            if (station.isFavorite) {
+                favoriteIcon.setImageResource(R.drawable.ic_favorite)
+                favoriteIcon.imageTintList = android.content.res.ColorStateList.valueOf(
+                    itemView.context.getColor(R.color.favorite)
+                )
+            } else {
+                favoriteIcon.setImageResource(R.drawable.ic_favorite_border)
+                favoriteIcon.imageTintList = android.content.res.ColorStateList.valueOf(
+                    itemView.context.getColor(R.color.text_secondary)
+                )
+            }
             playingStatus.visibility = if (station.lastPlayed > 0) View.VISIBLE else View.GONE
 
             itemView.isSelected = isSelected

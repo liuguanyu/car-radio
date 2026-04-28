@@ -1,7 +1,6 @@
 package com.carradio.data.repository
 
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.liveData
 import com.carradio.data.api.RadioApiService
 import com.carradio.data.db.ProvinceDao
 import com.carradio.data.db.ScheduleDao
@@ -59,14 +58,41 @@ class RadioRepository(
         return fetchStations(provinceCode.toString()).getOrNull()?.firstOrNull()
     }
 
-    suspend fun getFavoriteStations(): LiveData<List<Station>> = withContext(Dispatchers.IO) {
-        liveData(context = Dispatchers.IO) {
-            val favoriteStates = stationStateDao.getFavoriteStatesSync()
-            val stations = favoriteStates.mapNotNull { state ->
-                fetchStationByIdFromApi(state.contentId)?.applyState(state)
+    suspend fun getFavoriteStations(): List<Station> = withContext(Dispatchers.IO) {
+        val favoriteStates = stationStateDao.getFavoriteStatesSync()
+        if (favoriteStates.isEmpty()) return@withContext emptyList()
+
+        val stationMap = mutableMapOf<String, Station>()
+        val favoriteIds = favoriteStates.map { it.contentId }.toSet()
+
+        // 先从默认省份获取
+        val defaultStations = fetchStations("0").getOrDefault(emptyList())
+        defaultStations.forEach { station ->
+            if (station.contentId in favoriteIds) {
+                stationMap[station.contentId] = station
             }
-            emit(stations)
         }
+
+        // 对于未找到的收藏电台，遍历省份查找
+        val stillMissing = favoriteIds - stationMap.keys
+        if (stillMissing.isNotEmpty()) {
+            val provinces = provinceDao.getAllProvincesSync()
+            for (province in provinces) {
+                if (stillMissing.none { it !in stationMap.keys }) break
+                val provinceStations = fetchStations(province.code.toString()).getOrDefault(emptyList())
+                provinceStations.forEach { station ->
+                    if (station.contentId in stillMissing && station.contentId !in stationMap.keys) {
+                        stationMap[station.contentId] = station
+                    }
+                }
+            }
+        }
+
+        // 合并状态
+        val stateMap = favoriteStates.associateBy { it.contentId }
+        stationMap.values.map { station ->
+            station.applyState(stateMap[station.contentId])
+        }.sortedBy { it.title }
     }
 
     suspend fun getAllStationsForSchedule(): List<Station> = withContext(Dispatchers.IO) {

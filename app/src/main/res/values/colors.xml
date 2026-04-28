@@ -43,6 +43,12 @@
     <!-- 分割线 -->
     <color name="divider">#FF333333</color>
 
+    <!-- 卡片背景 -->
+    <color name="card_background">#FF2A2A2A</color>
+
+    <!-- 输入框背景 -->
+    <color name="input_background">#FF2A2A2A</color>
+
     <!-- 图标 -->
     <color name="icon_default">#FFB3B3B3</color>
     <color name="icon_active">@color/primary</color>
