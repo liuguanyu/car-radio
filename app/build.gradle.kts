@@ -21,14 +21,25 @@ android {
         }
     }
 
+    signingConfigs {
+        create("release") {
+            // 使用 D:\devspace\android\car-radio 作为 keystore 文件
+            storeFile = file("D:/devspace/android/car-radio")
+            storePassword = "carradio"
+            keyAlias = "carradio"
+            keyPassword = "carradio"
+        }
+    }
+
     buildTypes {
         release {
-            isMinifyEnabled = true
-            isShrinkResources = true
+            isMinifyEnabled = false
+            isShrinkResources = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("release")
         }
         debug {
             applicationIdSuffix = ".debug"

@@ -12,10 +12,10 @@
     <uses-permission android:name="android.permission.MEDIA_CONTENT_CONTROL" />
     <uses-permission android:name="android.permission.MEDIA_BROWSING" />
 
-    <!-- 车载必须加这个 -->
+    <!-- 车载特性：设为非必须，允许在普通手机/平板上安装 -->
     <uses-feature
         android:name="android.hardware.type.automotive"
-        android:required="true" />
+        android:required="false" />
 
     <uses-feature
         android:name="android.software.car"
